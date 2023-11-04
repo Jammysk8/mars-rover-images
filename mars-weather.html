@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>NASA Curiosity Rover Photos</title>
+
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.3/css/lightbox.min.css" rel="stylesheet" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.3/js/lightbox-plus-jquery.min.js"></script>
+  <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+
+  <style>
+
+.lb-image {
+      max-width: 100%;
+      max-height: 100%;
+      min-width: 960px;
+      min-height: 960px;
+      border: 3px solid #d51616;
+      border-radius: 5px;
+      box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
+
+}
+
+
+#photo-container{
+text-align: center;
+}
+
+#title{
+    border: 2px solid rgb(233, 32, 32);
+    border-radius: 7px;
+    margin-left: 40%;
+    margin-right: 40%;
+    padding: 4px;
+    text-align: center;
+    font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+    font-size: 40px;
+    background-image: linear-gradient(red, orange);
+    text-decoration:solid;
+}
+
+#buttons{
+    font-size: xx-large;
+    text-align: center;
+}
+
+body{
+    background-image: linear-gradient(rgb(255, 63, 63), rgb(241, 201, 0));
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+}
+
+    img {
+    max-width: 100%;
+    height: 600px;
+    width: 600px;
+    margin: 10px;
+    display: inline-block;
+    align-items: center;
+}
+
+
+
+  </style>
+</head>
+<body>
+  <h1 id="title">NASA Curiosity Rover Photos</h1>
+  <div id="buttons">
+    <p>Fetch photos by sol and camera</p>
+    <label for="sol">Martian Sol (Day):</label>
+    <input type="number" id="sol" value="0" min="0">
+    <br>
+    <label for="camera">Camera:</label>
+    <select id="camera">
+      <option value="fhaz">Front Hazard Avoidance Camera (FHAZ)</option>
+      <option value="rhaz">Rear Hazard Avoidance Camera (RHAZ)</option>
+      <option value="mast">MAST</option>
+      <option value="chemcam">Chemistry and Camera Complex</option>
+      <option value="navcam">Navigation Camera</option>
+      <option value="mahli">Mars Hand Lens Imager</option>
+      <option value="mardi">Mars Descent Imager</option>
+    </select>
+    <br>
+    <button id="fetch-button">Fetch Photos</button>
+  </div>
+
+  <div id="photo-container">
+
+  </div>
+
+  <script>
+    document.getElementById('fetch-button').addEventListener('click', function () {
+      const apiKey = 'fuvAJTKMWgwzkOiztIx5GxbFBGbW4TQGBgrzpscI';
+      const sol = document.getElementById('sol').value;
+      const camera = document.getElementById('camera').value;
+
+      fetch(`https://api.nasa.gov/mars-photos/api/v1/rovers/curiosity/photos?sol=${sol}&camera=${camera}&api_key=${apiKey}`)
+        .then(response => response.json())
+        .then(data => {
+          const photoContainer = document.getElementById('photo-container');
+          photoContainer.innerHTML = '';
+
+          data.photos.forEach(photo => {
+            const imageContainer = document.createElement('a');
+            imageContainer.href = photo.img_src;
+            imageContainer.dataset.lightbox = 'mars-photos';
+            imageContainer.dataset.title = `Camera: ${photo.camera.full_name}`;
+
+            const img = document.createElement('img');
+            img.src = photo.img_src;
+            img.alt = `Mars Rover Photo from ${photo.camera.full_name}`;
+
+            imageContainer.appendChild(img);
+            photoContainer.appendChild(imageContainer);
+          });
+
+          lightbox.option({
+            resizeDuration: 200,
+            wrapAround: true
+          });
+        })
+        .catch(error => {
+          console.error('Error:', error);
+        });
+    });
+  </script>
+</body>
+</html>
